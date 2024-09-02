@@ -3,18 +3,23 @@ import dbClient from '../utils/db.js';
 
 class AppController {
 
-    static getStatus(request, response) {
+    static async getStatus(request, response) {
+        const redisStatus = await redisClient.isAlive();
+        const dbStatus = await dbClient.isAlive();
+        
         response.statusCode = 200;
-        if (redisClient.isAlive && dbClient.isAlive) {
-            response.end(`{"redis": true, "db": true }`)
-        }
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ redis: redisStatus, db: dbStatus }));
     }
 
-    static getStats(request, response) {
+    static async getStats(request, response) {
+        const nbUsers = await dbClient.nbUsers();
+        const nbFiles = await dbClient.nbFiles();
+        
         response.statusCode = 200;
-        response.end(`{ "users": ${dbClient.nbUsers}, "files": ${dbClient.nbFiles} }`);
-
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ users: nbUsers, files: nbFiles }));
     }
-}
+} 
 
 export default AppController;
