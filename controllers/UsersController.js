@@ -33,7 +33,7 @@ class UsersController {
 
     // Send response with the new user's ID
     return response.status(201).json({
-      id: result.insertedId,
+      _id: result.insertedId,
       email: email,
     });
   }
